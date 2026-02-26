@@ -18,7 +18,7 @@ A personal timeline notebook Flutter app - like Twitter/X but for your private n
 
 ### Timeline View
 Your personal timeline notebook - clean, simple, and private
-![Timeline](assets/screenshots/01_empty_timeline.png)
+![Timeline](assets/screenshots/timeline.png)
 
 ## Getting Started 🚀
 
