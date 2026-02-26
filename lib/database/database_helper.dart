@@ -6,16 +6,26 @@ import '../models/tag.dart';
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
+  final bool _isTest;
 
-  DatabaseHelper._init();
+  DatabaseHelper._init({bool isTest = false}) : _isTest = isTest;
+
+  factory DatabaseHelper.forTest() {
+    return DatabaseHelper._init(isTest: true);
+  }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('timeline_notebook.db');
+    _database = await _initDB(_isTest ? ':memory:' : 'timeline_notebook.db');
     return _database!;
   }
 
   Future<Database> _initDB(String filePath) async {
+    if (_isTest) {
+      // For testing, use in-memory database
+      return await openDatabase(filePath, version: 1, onCreate: _createDB);
+    }
+
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
@@ -28,7 +38,8 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         content TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
-        isFavorite INTEGER NOT NULL DEFAULT 0
+        isFavorite INTEGER NOT NULL DEFAULT 0,
+        image_paths TEXT
       )
     ''');
 
@@ -81,5 +92,15 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<void> close() async {
+    final db = await database;
+    await db.close();
+    _database = null;
+  }
+
+  void _resetDatabase() {
+    _database = null;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Note {
   final int? id;
   final String content;
@@ -19,15 +21,30 @@ class Note {
       'content': content,
       'timestamp': timestamp.millisecondsSinceEpoch,
       'isFavorite': isFavorite ? 1 : 0,
+      'image_paths': jsonEncode(imagePaths),
     };
   }
 
   factory Note.fromMap(Map<String, dynamic> map) {
+    List<String> parsedImagePaths = [];
+    if (map['image_paths'] != null && map['image_paths'].toString().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(map['image_paths']);
+        if (decoded is List) {
+          parsedImagePaths = decoded.cast<String>();
+        }
+      } catch (e) {
+        // If JSON parsing fails, default to empty list
+        parsedImagePaths = [];
+      }
+    }
+
     return Note(
       id: map['id'],
       content: map['content'],
       timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
       isFavorite: map['isFavorite'] == 1,
+      imagePaths: parsedImagePaths,
     );
   }
 
