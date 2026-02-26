@@ -161,6 +161,17 @@ class _ComposeScreenState extends State<ComposeScreen> {
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 100,
+                                height: 100,
+                                color: Colors.grey.shade300,
+                                child: const Icon(
+                                  Icons.broken_image,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         Positioned(

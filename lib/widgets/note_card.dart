@@ -38,14 +38,26 @@ class NoteCard extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: note.imagePaths.length,
                     itemBuilder: (context, index) {
+                      final imageFile = File(note.imagePaths[index]);
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
-                            File(note.imagePaths[index]),
+                            imageFile,
                             width: 100,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 100,
+                                height: 100,
+                                color: Colors.grey.shade300,
+                                child: const Icon(
+                                  Icons.broken_image,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       );
