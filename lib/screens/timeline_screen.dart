@@ -21,18 +21,40 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
   Future<void> _loadNotes() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
-    final notes = await DatabaseHelper.instance.getAllNotes();
-    setState(() {
-      _notes = notes;
-      _isLoading = false;
-    });
+
+    try {
+      final notes = await DatabaseHelper.instance.getAllNotes();
+      if (!mounted) return;
+      setState(() {
+        _notes = notes;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      // Error could be shown in a SnackBar if needed
+    }
   }
 
   Future<void> _toggleFavorite(Note note) async {
-    final updated = note.copyWith(isFavorite: !note.isFavorite);
-    await DatabaseHelper.instance.updateNote(updated);
-    _loadNotes();
+    try {
+      final updated = note.copyWith(isFavorite: !note.isFavorite);
+      await DatabaseHelper.instance.updateNote(updated);
+
+      if (!mounted) return;
+
+      // Update local state instead of full reload for better performance
+      setState(() {
+        final index = _notes.indexWhere((n) => n.id == note.id);
+        if (index != -1) {
+          _notes[index] = updated;
+        }
+      });
+    } catch (e) {
+      // Error could be shown in a SnackBar if needed
+    }
   }
 
   @override
@@ -58,6 +80,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     itemBuilder: (context, index) {
                       final note = _notes[index];
                       return NoteCard(
+                        key: ValueKey(note.id),
                         note: note,
                         onFavoriteToggle: () => _toggleFavorite(note),
                       );
