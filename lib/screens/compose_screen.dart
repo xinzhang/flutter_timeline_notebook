@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../database/database_helper.dart';
 import '../models/note.dart';
-// TODO: Import tag service when Note model includes tag data
-// import '../services/tag_service.dart';
+import '../services/tag_service.dart';
 
 class ComposeScreen extends StatefulWidget {
   const ComposeScreen({Key? key}) : super(key: key);
@@ -58,6 +57,14 @@ class _ComposeScreenState extends State<ComposeScreen> {
       );
 
       await DatabaseHelper.instance.createNote(note);
+
+      // Extract and save tags
+      if (note.content.isNotEmpty) {
+        final tags = TagService.extractTags(note.content);
+        if (tags.isNotEmpty && note.id != null) {
+          await TagService.saveTagsForNote(note.id!, tags);
+        }
+      }
 
       if (mounted) {
         Navigator.pop(context, true);
