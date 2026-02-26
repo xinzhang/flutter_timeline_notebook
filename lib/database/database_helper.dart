@@ -132,6 +132,23 @@ class DatabaseHelper {
     return result.map((map) => Tag.fromMap(map)).toList();
   }
 
+  Future<Map<int, List<String>>> getAllNotesTags() async {
+    final db = await database;
+    final result = await db.rawQuery('''
+      SELECT nt.noteId, t.name
+      FROM note_tags nt
+      INNER JOIN tags t ON nt.tagId = t.id
+    ''');
+
+    final Map<int, List<String>> noteTags = {};
+    for (final row in result) {
+      final noteId = row['noteId'] as int;
+      final tagName = row['name'] as String;
+      noteTags.putIfAbsent(noteId, () => []).add(tagName);
+    }
+    return noteTags;
+  }
+
   Future<void> addTagToNote(int noteId, int tagId) async {
     final db = await database;
     await db.insert(
@@ -152,10 +169,12 @@ class DatabaseHelper {
 
   Future<List<Note>> searchNotes(String query) async {
     final db = await database;
+    // Escape special SQL characters to prevent SQL injection
+    final escapedQuery = query.replaceAll('%', '\\%').replaceAll('_', '\\_');
     final result = await db.query(
       'notes',
-      where: 'content LIKE ?',
-      whereArgs: ['%$query%'],
+      where: 'content LIKE ? ESCAPE \'\\\'',
+      whereArgs: ['%$escapedQuery%'],
       orderBy: 'timestamp DESC',
     );
     return result.map((map) => Note.fromMap(map)).toList();

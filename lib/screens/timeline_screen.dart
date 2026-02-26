@@ -29,19 +29,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
     try {
       final notes = await DatabaseHelper.instance.getAllNotes();
-      final noteTags = <int, List<String>>{};
-
-      for (final note in notes) {
-        if (note.id != null) {
-          final tags = await DatabaseHelper.instance.getTagsForNote(note.id!);
-          noteTags[note.id!] = tags.map((tag) => tag.name).toList();
-        }
-      }
+      final allNoteTags = await DatabaseHelper.instance.getAllNotesTags();
 
       if (!mounted) return;
       setState(() {
         _notes = notes;
-        _noteTags = noteTags;
+        _noteTags = allNoteTags;
         _isLoading = false;
       });
     } catch (e) {
