@@ -14,6 +14,7 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   List<Note> _notes = [];
+  Map<int, List<String>> _noteTags = {};
   bool _isLoading = true;
 
   @override
@@ -28,9 +29,19 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
     try {
       final notes = await DatabaseHelper.instance.getAllNotes();
+      final noteTags = <int, List<String>>{};
+
+      for (final note in notes) {
+        if (note.id != null) {
+          final tags = await DatabaseHelper.instance.getTagsForNote(note.id!);
+          noteTags[note.id!] = tags.map((tag) => tag.name).toList();
+        }
+      }
+
       if (!mounted) return;
       setState(() {
         _notes = notes;
+        _noteTags = noteTags;
         _isLoading = false;
       });
     } catch (e) {
@@ -71,7 +82,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SearchScreen(allNotes: _notes),
+                  builder: (context) => SearchScreen(allNotes: _notes, noteTags: _noteTags),
                 ),
               );
             },
@@ -92,6 +103,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         key: ValueKey(note.id),
                         note: note,
                         onFavoriteToggle: () => _toggleFavorite(note),
+                        tags: note.id != null ? _noteTags[note.id!] ?? [] : [],
                       );
                     },
                   ),

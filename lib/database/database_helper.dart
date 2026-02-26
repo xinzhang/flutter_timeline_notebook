@@ -94,6 +94,73 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> createTag(String name) async {
+    final db = await database;
+    final result = await db.insert(
+      'tags',
+      {'name': name},
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+    return result;
+  }
+
+  Future<Tag?> getTagByName(String name) async {
+    final db = await database;
+    final result = await db.query(
+      'tags',
+      where: 'name = ?',
+      whereArgs: [name],
+      limit: 1,
+    );
+    if (result.isEmpty) return null;
+    return Tag.fromMap(result.first);
+  }
+
+  Future<List<Tag>> getAllTags() async {
+    final db = await database;
+    final result = await db.query('tags', orderBy: 'name ASC');
+    return result.map((map) => Tag.fromMap(map)).toList();
+  }
+
+  Future<List<Tag>> getTagsForNote(int noteId) async {
+    final db = await database;
+    final result = await db.rawQuery('''
+      SELECT tags.* FROM tags
+      INNER JOIN note_tags ON tags.id = note_tags.tagId
+      WHERE note_tags.noteId = ?
+    ''', [noteId]);
+    return result.map((map) => Tag.fromMap(map)).toList();
+  }
+
+  Future<void> addTagToNote(int noteId, int tagId) async {
+    final db = await database;
+    await db.insert(
+      'note_tags',
+      {'noteId': noteId, 'tagId': tagId},
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
+  Future<void> removeTagFromNote(int noteId, int tagId) async {
+    final db = await database;
+    await db.delete(
+      'note_tags',
+      where: 'noteId = ? AND tagId = ?',
+      whereArgs: [noteId, tagId],
+    );
+  }
+
+  Future<List<Note>> searchNotes(String query) async {
+    final db = await database;
+    final result = await db.query(
+      'notes',
+      where: 'content LIKE ?',
+      whereArgs: ['%$query%'],
+      orderBy: 'timestamp DESC',
+    );
+    return result.map((map) => Note.fromMap(map)).toList();
+  }
+
   Future<void> close() async {
     final db = await database;
     await db.close();

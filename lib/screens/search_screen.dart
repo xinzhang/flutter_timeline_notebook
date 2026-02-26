@@ -4,8 +4,13 @@ import '../widgets/note_card.dart';
 
 class SearchScreen extends StatefulWidget {
   final List<Note> allNotes;
+  final Map<int, List<String>> noteTags;
 
-  const SearchScreen({Key? key, required this.allNotes}) : super(key: key);
+  const SearchScreen({
+    Key? key,
+    required this.allNotes,
+    this.noteTags = const {},
+  }) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -14,8 +19,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   List<Note> _filteredNotes = [];
-  // TODO: Will be used for tag filtering in Task 7
-  String? _selectedTag;
 
   @override
   void initState() {
@@ -57,10 +60,10 @@ class _SearchScreenState extends State<SearchScreen> {
           : ListView.builder(
               itemCount: _filteredNotes.length,
               itemBuilder: (context, index) {
+                final note = _filteredNotes[index];
                 return NoteCard(
-                  note: _filteredNotes[index],
-                  // TODO: Will be populated with actual tags in Task 7 when database methods are added
-                  tags: [],
+                  note: note,
+                  tags: note.id != null ? widget.noteTags[note.id!] ?? [] : [],
                 );
               },
             ),
