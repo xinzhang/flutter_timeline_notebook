@@ -17,24 +17,8 @@ A personal timeline notebook Flutter app - like Twitter/X but for your private n
 ## Screenshots
 
 ### Timeline View
-Your personal timeline showing all your notes in reverse chronological order
-![Timeline with Notes](assets/screenshots/02_timeline_with_notes.png)
-
-### Tags Support
-Notes with hashtags automatically extracted and displayed
-![Notes with Tags](assets/screenshots/03_notes_with_tags.png)
-
-### Search Functionality
-Instant search to find notes by content
-![Search Screen](assets/screenshots/04_search_screen.png)
-
-### Create Notes
-Clean compose screen to write new notes
-![Compose Screen](assets/screenshots/05_compose_screen.png)
-
-### Empty State
-Welcome screen when you start using the app
-![Empty Timeline](assets/screenshots/01_empty_timeline.png)
+Your personal timeline notebook - clean, simple, and private
+![Timeline](assets/screenshots/01_empty_timeline.png)
 
 ## Getting Started 🚀
 
