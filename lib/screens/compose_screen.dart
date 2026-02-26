@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import '../database/database_helper.dart';
 import '../models/note.dart';
 import '../services/tag_service.dart';
@@ -28,7 +30,14 @@ class _ComposeScreenState extends State<ComposeScreen> {
     try {
       final pickedFile = await _imagePicker.pickImage(source: source);
       if (pickedFile != null) {
-        setState(() => _imagePaths.add(pickedFile.path));
+        // Copy image to permanent storage
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}${path.extension(pickedFile.path)}';
+        final savedPath = path.join(appDir.path, fileName);
+
+        await File(pickedFile.path).copy(savedPath);
+
+        setState(() => _imagePaths.add(savedPath));
       }
     } catch (e) {
       if (mounted) {
