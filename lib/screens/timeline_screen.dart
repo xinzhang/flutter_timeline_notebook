@@ -92,11 +92,30 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     itemCount: _notes.length,
                     itemBuilder: (context, index) {
                       final note = _notes[index];
-                      return NoteCard(
-                        key: ValueKey(note.id),
-                        note: note,
-                        onFavoriteToggle: () => _toggleFavorite(note),
-                        tags: note.id != null ? _noteTags[note.id!] ?? [] : [],
+                      return Dismissible(
+                        key: Key(note.id.toString()),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) async {
+                          await DatabaseHelper.instance.deleteNote(note.id!);
+                          _loadNotes();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Note deleted')),
+                            );
+                          }
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 16),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        child: NoteCard(
+                          key: ValueKey(note.id),
+                          note: note,
+                          onFavoriteToggle: () => _toggleFavorite(note),
+                          tags: note.id != null ? _noteTags[note.id!] ?? [] : [],
+                        ),
                       );
                     },
                   ),
