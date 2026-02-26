@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import '../models/note.dart';
 import '../widgets/note_card.dart';
+import 'compose_screen.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
@@ -87,6 +88,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     },
                   ),
                 ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ComposeScreen()),
+          );
+          if (result == true && mounted) {
+            _loadNotes();
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
