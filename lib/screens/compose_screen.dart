@@ -13,6 +13,7 @@ class ComposeScreen extends StatefulWidget {
 class _ComposeScreenState extends State<ComposeScreen> {
   final _textController = TextEditingController();
   final List<String> _imagePaths = [];
+  final _imagePicker = ImagePicker();
   bool _isPosting = false;
 
   @override
@@ -22,31 +23,50 @@ class _ComposeScreenState extends State<ComposeScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() => _imagePaths.add(pickedFile.path));
+    try {
+      final pickedFile = await _imagePicker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() => _imagePaths.add(pickedFile.path));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick image: $e')),
+        );
+      }
     }
   }
 
   Future<void> _postNote() async {
     if (_textController.text.trim().isEmpty && _imagePaths.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please add some content or images')),
+      );
       return;
     }
 
     setState(() => _isPosting = true);
 
-    final note = Note(
-      content: _textController.text.trim(),
-      timestamp: DateTime.now(),
-      isFavorite: false,
-      imagePaths: List.from(_imagePaths),
-    );
+    try {
+      final note = Note(
+        content: _textController.text.trim(),
+        timestamp: DateTime.now(),
+        isFavorite: false,
+        imagePaths: List.from(_imagePaths),
+      );
 
-    await DatabaseHelper.instance.createNote(note);
+      await DatabaseHelper.instance.createNote(note);
 
-    if (mounted) {
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isPosting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to post note: $e')),
+        );
+      }
     }
   }
 
