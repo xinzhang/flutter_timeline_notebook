@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../database/database_helper.dart';
@@ -155,8 +156,8 @@ class _ComposeScreenState extends State<ComposeScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            _imagePaths[index],
+                          child: Image.file(
+                            File(_imagePaths[index]),
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,

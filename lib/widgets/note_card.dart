@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/note.dart';
@@ -41,8 +42,8 @@ class NoteCard extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            note.imagePaths[index],
+                          child: Image.file(
+                            File(note.imagePaths[index]),
                             width: 100,
                             fit: BoxFit.cover,
                           ),
