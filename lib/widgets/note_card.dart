@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/note.dart';
+import 'tag_chip.dart';
 
 class NoteCard extends StatelessWidget {
   final Note note;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteToggle;
+  final List<String> tags;
 
   const NoteCard({
     Key? key,
     required this.note,
     this.onTap,
     this.onFavoriteToggle,
+    this.tags = const [],
   }) : super(key: key);
 
   @override
@@ -46,6 +49,17 @@ class NoteCard extends StatelessWidget {
                         ),
                       );
                     },
+                  ),
+                ),
+              if (tags.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: tags
+                        .map((tag) => TagChip(tag: tag))
+                        .toList(),
                   ),
                 ),
               const SizedBox(height: 8),

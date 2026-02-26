@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../database/database_helper.dart';
 import '../models/note.dart';
+// TODO: Import tag service when Note model includes tag data
+// import '../services/tag_service.dart';
 
 class ComposeScreen extends StatefulWidget {
   const ComposeScreen({Key? key}) : super(key: key);
