@@ -14,6 +14,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   List<Note> _filteredNotes = [];
+  // TODO: Will be used for tag filtering in Task 7
   String? _selectedTag;
 
   @override
@@ -58,7 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
               itemBuilder: (context, index) {
                 return NoteCard(
                   note: _filteredNotes[index],
-                  tags: [], // Will be populated when database methods added
+                  // TODO: Will be populated with actual tags in Task 7 when database methods are added
+                  tags: [],
                 );
               },
             ),
