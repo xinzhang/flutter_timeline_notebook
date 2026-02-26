@@ -3,6 +3,7 @@ import '../database/database_helper.dart';
 import '../models/note.dart';
 import '../widgets/note_card.dart';
 import 'compose_screen.dart';
+import 'search_screen.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
@@ -66,7 +67,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(allNotes: _notes),
+                ),
+              );
+            },
           ),
         ],
       ),
